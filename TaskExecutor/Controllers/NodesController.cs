@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TaskExecutor.Models;
+using TaskExecutor.Repository;
 
 namespace TaskExecutor.Controllers
 {
@@ -12,20 +8,58 @@ namespace TaskExecutor.Controllers
     [ApiController]
     public class NodesController : ControllerBase
     {
+        private NodeRepository _nodeRepository;
+
+        public NodesController()
+        {
+            _nodeRepository = NodeRepository.GetInstance();
+        }
+
         [HttpPost]
         [Route("register")]
-        public IActionResult RegisterNode([FromBody] NodeRegistrationRequest node)
+        public IActionResult RegisterNode([FromBody] NodeRegistrationRequest nodeRegistrationRequest)
         {
-            // TODO: Implement this method
+            if (nodeRegistrationRequest?.Name == null || nodeRegistrationRequest?.Address == null)
+            {
+                return BadRequest(nodeRegistrationRequest?.ToString());
+            }
 
+            _nodeRepository.AddNode(new Node(nodeRegistrationRequest));
             return Ok();
         }
-        
+
         [HttpDelete]
         [Route("unregister/{name}")]
-        public IActionResult RegisterNode(string name)
+        public IActionResult UnregisterNode(string name)
         {
-            throw new NotImplementedException();
+            if (name == null)
+            {
+                return BadRequest("Name cannot be Null.");
+            }
+
+            _nodeRepository.RemoveNode(name);
+            return Ok();
+        }
+
+        [HttpPut]
+        [Route("turnOffline/{name}")]
+        public IActionResult MakeNodeOffline(string name)
+        {
+            if (name == null)
+            {
+                return BadRequest("Name cannot be Null.");
+            }
+
+            _nodeRepository.MakeNodeOffline(name);
+            return Ok();
+        }
+
+        [HttpGet]
+        [Route("Status")]
+        public IActionResult GetNodesWithStatus()
+        {
+            var nodes = _nodeRepository.GetAllNodes();
+            return Ok(nodes);
         }
     }
 }
