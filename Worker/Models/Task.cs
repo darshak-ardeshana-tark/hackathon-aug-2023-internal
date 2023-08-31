@@ -12,5 +12,15 @@ namespace Worker.Models
             Id = Guid.NewGuid();
             Status = TaskStatus.Pending;
         }
+
+        public void ChangeStatusToFailed()
+        {
+            Status = TaskStatus.Failed;
+        }
+
+        public void ChangeStatusToCompleted()
+        {
+            Status = TaskStatus.Completed;
+        }
     }
 }

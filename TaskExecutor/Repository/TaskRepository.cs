@@ -34,9 +34,7 @@ namespace TaskExecutor.Repository
 
         public List<Task> GetNextSetOfTasksToRun()
         {
-            var nodeCount = NodeRepository.GetInstance().GetAllActiveNodes().Count();
-
-            return _task.Where(_ => _.Status == Models.TaskStatus.Pending).Take(nodeCount).ToList();
+            return _task.Where(_ => _.Status == Models.TaskStatus.Pending).ToList();
         }
 
         public List<Task> GetTaskByStatus(string status)

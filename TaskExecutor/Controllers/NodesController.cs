@@ -25,6 +25,7 @@ namespace TaskExecutor.Controllers
             }
 
             _nodeRepository.AddNode(new Node(nodeRegistrationRequest));
+            new TaskExecutor().ExecuteNextTask();
             return Ok();
         }
 

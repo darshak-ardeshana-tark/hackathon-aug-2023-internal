@@ -1,4 +1,5 @@
-﻿using TaskExecutor.Models;
+﻿using System.Xml.Linq;
+using TaskExecutor.Models;
 
 namespace TaskExecutor.Repository
 {
@@ -12,24 +13,28 @@ namespace TaskExecutor.Repository
             _nodes = new List<Node>();
         }
 
-        public static NodeRepository GetInstance() 
-        { 
-            if(_instance == null)
+        public static NodeRepository GetInstance()
+        {
+            if (_instance == null)
             {
                 _instance = new NodeRepository();
             }
-            return _instance; 
+            return _instance;
         }
 
         public void AddNode(Node node)
         {
-            _nodes.Add(node);
+            Node existingNode = _nodes.FirstOrDefault(_ => _.NodeRegistrationRequest.Name.Equals(node.NodeRegistrationRequest.Name));
+            if (existingNode == null)
+            {
+                _nodes.Add(node);
+            }
         }
 
         public Node RemoveNode(string name)
         {
             Node nodeToRemove = _nodes.FirstOrDefault(_ => _.NodeRegistrationRequest.Name.Equals(name));
-            if(nodeToRemove != null)
+            if (nodeToRemove != null)
             {
                 _nodes.Remove(nodeToRemove);
                 return nodeToRemove;
