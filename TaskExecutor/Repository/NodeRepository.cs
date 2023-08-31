@@ -43,7 +43,7 @@ namespace TaskExecutor.Repository
             Node nodeToMakeOffline = _nodes.FirstOrDefault(_ => _.NodeRegistrationRequest.Name.Equals(name));
             if (nodeToMakeOffline != null)
             {
-                nodeToMakeOffline.MakeOffline();
+                nodeToMakeOffline.ChangeStatusToOffline();
             }
 
             throw new InvalidOperationException("Worker with the Name: " + name + " Not Found");

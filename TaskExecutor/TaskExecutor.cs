@@ -20,6 +20,9 @@ namespace TaskExecutor
 
             if (nextTaskToExecute != null && availableNode != null)
             {
+                availableNode.ChangeStatusToBusy();
+                nextTaskToExecute.ChangeStatusToRunning();
+
                 HttpClient httpClient = new HttpClient();
                 HttpResponseMessage response = await httpClient.PostAsJsonAsync(availableNode.NodeRegistrationRequest.Address + "/executetask", nextTaskToExecute);
                 response.EnsureSuccessStatusCode();

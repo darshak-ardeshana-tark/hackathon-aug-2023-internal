@@ -12,5 +12,10 @@ namespace TaskExecutor.Models
             Id = Guid.NewGuid();
             Status = TaskStatus.Pending;
         }
+
+        public void ChangeStatusToRunning()
+        {
+            Status = TaskStatus.Running;
+        }
     }
 }
