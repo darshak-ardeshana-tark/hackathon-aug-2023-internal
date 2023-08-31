@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Xml.Linq;
 using TaskExecutor.Models;
 using TaskExecutor.Repository;
+using Worker.Models;
 using Task = TaskExecutor.Models.Task;
 
 namespace TaskExecutor.Controllers
@@ -11,10 +12,12 @@ namespace TaskExecutor.Controllers
     public class TasksController : ControllerBase
     {
         private TaskRepository _taskRepository;
+        private NodeRepository _nodeRepository;
 
         public TasksController()
         {
             _taskRepository = TaskRepository.GetInstance();
+            _nodeRepository = NodeRepository.GetInstance();
         }
 
         [HttpPost]
@@ -49,9 +52,10 @@ namespace TaskExecutor.Controllers
 
         [HttpPut]
         [Route("executed")]
-        public IActionResult ExecutedTaskUpdate([FromBody] Task task)
+        public IActionResult ExecutedTaskUpdate([FromBody] TaskResponse taskResponse)
         {
-            _taskRepository.UpdateTask(task);
+            _taskRepository.UpdateTask(taskResponse.Task);
+            _nodeRepository.ChangeStatusToAvailable(taskResponse.NodeName);
             new TaskExecutor().ExecuteNextTask();
             return Ok();
         }

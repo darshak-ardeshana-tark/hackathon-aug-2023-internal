@@ -63,5 +63,11 @@ namespace TaskExecutor.Repository
         {
             return _nodes.FirstOrDefault(_ => _.Status == NodeStatus.Available);
         }
+
+        public void ChangeStatusToAvailable(string name)
+        {
+            var node = _nodes.FirstOrDefault(_ => _.NodeRegistrationRequest.Name.Equals(name));
+            node.ChangeStatusToAvailable();
+        }
     }
 }

@@ -24,7 +24,7 @@ namespace TaskExecutor
                 nextTaskToExecute.ChangeStatusToRunning();
 
                 HttpClient httpClient = new HttpClient();
-                HttpResponseMessage response = await httpClient.PostAsJsonAsync(availableNode.NodeRegistrationRequest.Address + "/executetask", nextTaskToExecute);
+                HttpResponseMessage response = await httpClient.PostAsJsonAsync(availableNode.NodeRegistrationRequest.Address + "/api/Tasks/executetask", nextTaskToExecute);
                 response.EnsureSuccessStatusCode();
             }
         }

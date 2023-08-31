@@ -16,9 +16,14 @@
             Status = NodeStatus.Offline;
         }
 
-        internal void ChangeStatusToBusy()
+        public void ChangeStatusToBusy()
         {
             Status = NodeStatus.Busy;
+        }
+
+        public void ChangeStatusToAvailable()
+        {
+            Status = NodeStatus.Available;
         }
     }
 }
