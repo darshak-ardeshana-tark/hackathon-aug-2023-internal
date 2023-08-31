@@ -39,7 +39,7 @@ namespace TaskExecutor.Repository
 
         public List<Task> GetTaskByStatus(string status)
         {
-            return _task.Where(_ => _.Status.Equals(status)).ToList();
+            return _task.Where(_ => _.Status.ToString().Equals(status)).ToList();
         }
 
         public void UpdateTask(Task task)
