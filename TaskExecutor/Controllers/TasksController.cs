@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Xml.Linq;
-using TaskExecutor.Models;
+using TaskExecutor.DTOs;
 using TaskExecutor.Repository;
+using TaskExecutor.Services;
 using Worker.Models;
 using Task = TaskExecutor.Models.Task;
 
@@ -25,7 +25,7 @@ namespace TaskExecutor.Controllers
         public IActionResult AddTask()
         {
             var task = _taskRepository.AddTask(new Task());
-            new TaskExecutor().ExecuteNextTask();
+            new TaskOrchestrator().ExecuteNextTask();
             return Ok(task);
         }
 
@@ -54,9 +54,10 @@ namespace TaskExecutor.Controllers
         [Route("executed")]
         public IActionResult ExecutedTaskUpdate([FromBody] TaskResponse taskResponse)
         {
-            _taskRepository.UpdateTask(taskResponse.Task);
+            TaskDTO taskDTO = taskResponse.TaskDTO;
+            _taskRepository.UpdateTask(taskDTO.Id, taskDTO.Status);
             _nodeRepository.ChangeStatusToAvailable(taskResponse.NodeName);
-            new TaskExecutor().ExecuteNextTask();
+            new TaskOrchestrator().ExecuteNextTask();
             return Ok();
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Task = TaskExecutor.Models.Task;
+using TaskStatus = TaskExecutor.Models.TaskStatus;
 
 namespace TaskExecutor.Repository
 {
@@ -29,7 +30,7 @@ namespace TaskExecutor.Repository
 
         public Task GetNextTaskToRun()
         {
-            return _task.FirstOrDefault(_ => _.Status == Models.TaskStatus.Pending);
+            return _task.FirstOrDefault(_ => _.Status == Models.TaskStatus.Pending || _.Status == Models.TaskStatus.Abort);
         }
 
         public List<Task> GetNextSetOfTasksToRun()
@@ -42,16 +43,16 @@ namespace TaskExecutor.Repository
             return _task.Where(_ => _.Status.ToString().Equals(status)).ToList();
         }
 
-        public void UpdateTask(Task task)
+        public void UpdateTask(Guid id, TaskStatus taskStatus)
         {
-            var taskToUpdate = _task.FirstOrDefault(_ => _.Id.Equals(task.Id));
+            var taskToUpdate = _task.FirstOrDefault(_ => _.Id.Equals(id));
             if (taskToUpdate != null)
             {
-                taskToUpdate.Status = task.Status;
+                taskToUpdate.Status = taskStatus;
             }
             else
             {
-                throw new InvalidDataException("Task with Id: " + task.Id + " does not exists.");
+                throw new InvalidDataException("Task with Id: " + id + " does not exists.");
             }
         }
     }

@@ -1,15 +1,16 @@
-﻿using Task = TaskExecutor.Models.Task;
+﻿using TaskExecutor.DTOs;
+using Task = TaskExecutor.Models.Task;
 
 namespace Worker.Models
 {
     public class TaskResponse
     {
-        public Task Task { get; set; }
+        public TaskDTO TaskDTO { get; set; }
         public string NodeName { get; set; }
 
-        public TaskResponse(Task task, string nodeName)
+        public TaskResponse(TaskDTO taskDTO, string nodeName)
         {
-            Task = task;
+            TaskDTO = taskDTO;
             NodeName = nodeName;
         }
     }

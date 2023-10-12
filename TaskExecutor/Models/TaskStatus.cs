@@ -5,6 +5,7 @@
         Pending, 
         Running, 
         Completed, 
-        Failed
+        Failed,
+        Abort
     }
 }

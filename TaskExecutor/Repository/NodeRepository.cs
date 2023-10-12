@@ -1,5 +1,6 @@
 ﻿using System.Xml.Linq;
 using TaskExecutor.Models;
+using Task = TaskExecutor.Models.Task;
 
 namespace TaskExecutor.Repository
 {
@@ -48,6 +49,8 @@ namespace TaskExecutor.Repository
             Node nodeToMakeOffline = _nodes.FirstOrDefault(_ => _.NodeRegistrationRequest.Name.Equals(name));
             if (nodeToMakeOffline != null)
             {
+                Task task = nodeToMakeOffline.GetRunningTask();
+                task.Abort();
                 nodeToMakeOffline.ChangeStatusToOffline();
             }
 

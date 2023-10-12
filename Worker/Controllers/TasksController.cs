@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Threading;
 using Task = Worker.Models.Task;
 
 namespace Worker.Controllers
@@ -7,16 +8,27 @@ namespace Worker.Controllers
     [ApiController]
     public class TasksController : ControllerBase
     {
-        private readonly WorkerInfo _workerInfo;
-        public TasksController(WorkerInfo workerInfo)
+        static CancellationTokenSource cancellationTokenSource;
+        static System.Threading.Tasks.Task _task;
+        private readonly Executor _executor;
+
+        public TasksController(Executor executor)
         {
-            _workerInfo = workerInfo;
+            _executor = executor;
         }
 
         [HttpPost("executetask")]
         public IActionResult Executetask([FromBody] Task task)
         {
-            new Executor(_workerInfo).ExecuteTask(task);
+            cancellationTokenSource = new CancellationTokenSource();
+            System.Threading.Tasks.Task.Run(() => _task = _executor.ExecuteTask(task, cancellationTokenSource.Token), cancellationTokenSource.Token);
+            return Ok();
+        }
+
+        [HttpPost("aborttask")]
+        public IActionResult AbortTask()
+        {
+            cancellationTokenSource.Cancel();
             return Ok();
         }
     }

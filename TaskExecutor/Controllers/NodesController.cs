@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TaskExecutor.Models;
 using TaskExecutor.Repository;
+using TaskExecutor.Services;
 
 namespace TaskExecutor.Controllers
 {
@@ -25,7 +26,7 @@ namespace TaskExecutor.Controllers
             }
 
             _nodeRepository.AddNode(new Node(nodeRegistrationRequest));
-            new TaskExecutor().ExecuteNextTask();
+            new TaskOrchestrator().ExecuteNextTask();
             return Ok();
         }
 
