@@ -35,4 +35,13 @@ public class WorkerRegistrar
         
         _logger.LogInformation("Worker registered with name: {WorkerName}", worker.Name);
     }
+
+    public async void RegisterWorkerShutdownConfigurationAsync()
+    {
+        var worker = GetWorkerInfo();
+
+        var client = new HttpClient();
+        var response = await client.PostAsJsonAsync($"{_allocatorUri}/api/nodes/shutdown/{worker.Name}", "");
+        response.EnsureSuccessStatusCode();
+    }
 }

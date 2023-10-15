@@ -43,8 +43,8 @@ namespace TaskExecutor.Controllers
             return Ok();
         }
 
-        [HttpPut]
-        [Route("turnOffline/{name}")]
+        [HttpPost]
+        [Route("shutdown/{name}")]
         public IActionResult MakeNodeOffline(string name)
         {
             if (name == null)

@@ -40,4 +40,6 @@ await registrar.RegisterWorkerAsync();
 
 Console.WriteLine($"Worker started, listening on port: {worker.Port}. Memes will be saved at: {worker.WorkDir}");
 
+app.Services.GetService<IHostApplicationLifetime>().ApplicationStopping.Register(registrar.RegisterWorkerShutdownConfigurationAsync);
+
 app.Run();
