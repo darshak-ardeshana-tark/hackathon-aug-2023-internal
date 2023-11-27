@@ -20,6 +20,9 @@ namespace TaskExecutor.Services
             _nodeRepository = NodeRepository.GetInstance();
         }
 
+        // REVIEW:
+        //   async tasks should always have `Task` or `Task<>` as return type. Having them as void would create issues where parent object will get disposed before completion of this method.
+
         public async void ExecuteNextTask()
         {
             var nextTaskToExecute = _taskRepository.GetNextTaskToRun();
@@ -35,6 +38,9 @@ namespace TaskExecutor.Services
                 NodeTask nodeTask = new NodeTask(availableNode, nextTaskToExecute);
                 availableNode.AddNodeTask(nodeTask);
                 nextTaskToExecute.AddNodeTask(nodeTask);
+
+                // REVIEW:
+                //   Create a separate method that should take care of invoking API for execution and timeout. Would make the code even more readable.
                 SetTimeout(nextTaskToExecute, availableNode);
 
                 HttpClient httpClient = new HttpClient();
@@ -43,6 +49,11 @@ namespace TaskExecutor.Services
             }
         }
 
+
+
+        // REVIEW:
+        //   I see an issue with this timeout+abort mechanism:
+        //     - When multiple tasks are scheduled, and more than one task timesout, only one of the timer would stop and rest will continue calling abort endpoint every 5 seconds
         public void SetTimeout(Models.Task task, Node node)
         {
             _timer = new System.Timers.Timer(timeToWaitForTaskToCompleteInSec * 1000);

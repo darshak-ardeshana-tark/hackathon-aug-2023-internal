@@ -35,12 +35,27 @@ namespace TaskExecutor.Repository
         public Node RemoveNode(string name)
         {
             Node nodeToRemove = _nodes.FirstOrDefault(_ => _.NodeRegistrationRequest.Name.Equals(name));
+            
+            // REVIEW:
+            //   It's good practice to implement validations to handle bad data. :kudos:
+            //   One common practice, for better readability, is to short circuit the method in case of bad input, instead of having implementation inside the if block. Something like:
+            //   if (nodeToRemove == null)
+            //   {
+            //       throw new ArgumentException($"Worker with name {name} does not exist!");  
+            //   }
+            //   
+            //   // <Rest implementation goes here>
+            //
+            //   Benefit of this approach is, it's easier to read. When reading, the if block, I'd know that we are short circuiting in case of bad data.
+            //   Having thrown exception at the end will require reader to figure out when code will, or will not reach to this point. It'd have more cognitive load.
+
             if (nodeToRemove != null)
             {
                 _nodes.Remove(nodeToRemove);
                 return nodeToRemove;
             }
 
+            
             throw new InvalidOperationException("Worker with the Name: " + name + " Not Found");
         }
 

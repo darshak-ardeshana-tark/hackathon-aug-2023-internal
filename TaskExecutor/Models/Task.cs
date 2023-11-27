@@ -6,6 +6,10 @@ namespace TaskExecutor.Models
     {
         public Guid Id { get; set; }
         public TaskStatus Status { get; set; }
+
+        // REVIEW:
+        //   Having to maintain this allocation list at two places - at node, and at task - creates data redundancy. Which comes with its own set of problems.
+        //   Better idea would be to have a separate component (class) to track task allocations to the node
         public List<NodeTask> NodeTasks { get; set; }
 
         public Task()
