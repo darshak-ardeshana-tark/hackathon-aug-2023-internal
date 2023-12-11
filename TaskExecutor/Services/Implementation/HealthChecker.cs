@@ -2,19 +2,20 @@
 using System.Net.Http;
 using System.Timers;
 using Task = TaskExecutor.Models.Task;
+using TaskExecutor.Repository.Implementation;
 using TaskExecutor.Repository;
 
-namespace TaskExecutor.Services
+namespace TaskExecutor.Services.Implementation
 {
-    public class HealthChecker
+    public class HealthChecker : IHealthChecker
     {
         private System.Timers.Timer _timer;
-        private readonly NodeRepository _nodeRepository;
+        private readonly INodeRepository _nodeRepository;
         private readonly int healthCheckIntervalInSec = 10;
 
-        public HealthChecker()
+        public HealthChecker(INodeRepository nodeRepository)
         {
-            _nodeRepository = NodeRepository.GetInstance();
+            _nodeRepository = nodeRepository;
         }
 
         public void CheckWorkersHealth()
@@ -25,13 +26,13 @@ namespace TaskExecutor.Services
             _timer.Enabled = true;
         }
 
-        private  async void CheckWorkerHealth(object sender, ElapsedEventArgs e)
+        private async void CheckWorkerHealth(object sender, ElapsedEventArgs e)
         {
-            var nodes = _nodeRepository.GetAllNodes().Where(_ => _.Status != Models.NodeStatus.Offline).ToList();
+            var nodes = _nodeRepository.GetAllNodes().Where(_ => _.GetStatus() != Models.NodeStatus.Offline).ToList();
             foreach (var node in nodes)
             {
                 Console.WriteLine("Health Check Init");
-                var workerHealthCheckUrl = node.NodeRegistrationRequest.Address.ToString() + "/api/health";
+                var workerHealthCheckUrl = node.GetBaseURL().ToString() + "/api/health";
                 using (HttpClient client = new HttpClient())
                 {
                     try

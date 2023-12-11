@@ -2,8 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using TaskExecutor.DTOs;
 using TaskExecutor.Repository;
 using TaskExecutor.Services;
-using Worker.Models;
-using Task = TaskExecutor.Models.Task;
 
 namespace TaskExecutor.Controllers
 {
@@ -11,21 +9,18 @@ namespace TaskExecutor.Controllers
     [ApiController]
     public class TasksController : ControllerBase
     {
-        private TaskRepository _taskRepository;
-        private NodeRepository _nodeRepository;
+        private ITaskService _taskService;
 
-        public TasksController()
+        public TasksController(ITaskService taskService)
         {
-            _taskRepository = TaskRepository.GetInstance();
-            _nodeRepository = NodeRepository.GetInstance();
+            _taskService = taskService;
         }
 
         [HttpPost]
         [Route("add")]
         public IActionResult AddTask()
         {
-            var task = _taskRepository.AddTask(new Task());
-            new TaskOrchestrator().ExecuteNextTask();
+            var task = _taskService.AddTask();
             return Ok(task);
         }
 
@@ -33,31 +28,23 @@ namespace TaskExecutor.Controllers
         [Route("status/{status}")]
         public IActionResult GetTaskByStatus(string status)
         {
-            if (status == null)
-            {
-                return BadRequest("Status cannot be Null.");
-            }
-
-            var task = _taskRepository.GetTaskByStatus(status);
+            var task = _taskService.GetTaskByStatus(status);
             return Ok(task);
         }
 
         [HttpGet]
-        [Route("nextsettorun")]
-        public IActionResult GetNextSetOfTaskToRun()
+        [Route("next-tasks")]
+        public IActionResult GetNextTasks()
         {
-            var tasks = _taskRepository.GetNextSetOfTasksToRun();
+            var tasks = _taskService.GetNextTasks();
             return Ok(tasks);
         }
 
         [HttpPut]
         [Route("executed")]
-        public IActionResult ExecutedTaskUpdate([FromBody] TaskResponse taskResponse)
+        public IActionResult ExecutedTaskUpdate([FromBody] TaskExecutionResponse taskResponse)
         {
-            TaskDTO taskDTO = taskResponse.TaskDTO;
-            _taskRepository.UpdateTask(taskDTO.Id, taskDTO.Status);
-            _nodeRepository.ChangeStatusToAvailable(taskResponse.NodeName);
-            new TaskOrchestrator().ExecuteNextTask();
+            _taskService.ExecutedTask(taskResponse.Id, taskResponse.Status, taskResponse.NodeName);
             return Ok();
         }
     }

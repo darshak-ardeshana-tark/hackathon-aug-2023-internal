@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
+using TaskExecutor.DTOs;
 using TaskExecutor.Models;
 using TaskExecutor.Repository;
+using TaskExecutor.Repository.Implementation;
 using TaskExecutor.Services;
+using TaskExecutor.Services.Implementation;
 
 namespace TaskExecutor.Controllers
 {
@@ -9,11 +12,11 @@ namespace TaskExecutor.Controllers
     [ApiController]
     public class NodesController : ControllerBase
     {
-        private NodeRepository _nodeRepository;
+        private INodeService _nodeService;
 
-        public NodesController()
+        public NodesController(INodeService nodeService)
         {
-            _nodeRepository = NodeRepository.GetInstance();
+            _nodeService = nodeService;
         }
 
         [HttpPost]
@@ -25,8 +28,7 @@ namespace TaskExecutor.Controllers
                 return BadRequest(nodeRegistrationRequest?.ToString());
             }
 
-            _nodeRepository.AddNode(new Node(nodeRegistrationRequest));
-            new TaskOrchestrator().ExecuteNextTask();
+            _nodeService.AddNode(nodeRegistrationRequest.Name, nodeRegistrationRequest.Address);
             return Ok();
         }
 
@@ -39,7 +41,7 @@ namespace TaskExecutor.Controllers
                 return BadRequest("Name cannot be Null.");
             }
 
-            _nodeRepository.RemoveNode(name);
+            _nodeService.RemoveNode(name);
             return Ok();
         }
 
@@ -52,7 +54,7 @@ namespace TaskExecutor.Controllers
                 return BadRequest("Name cannot be Null.");
             }
 
-            _nodeRepository.MakeNodeOffline(name);
+            _nodeService.MakeNodeOffline(name);
             return Ok();
         }
 
@@ -60,7 +62,7 @@ namespace TaskExecutor.Controllers
         [Route("Status")]
         public IActionResult GetNodesWithStatus()
         {
-            var nodes = _nodeRepository.GetAllNodes();
+            var nodes = _nodeService.GetAllNodes();
             return Ok(nodes);
         }
     }
